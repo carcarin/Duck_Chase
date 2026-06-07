@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duck Chase</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="game">
+
+        <img id="skybg" src="Main page/Sky.png">
+        <img id="grass" src="Main page/Grass.jpg">
+        
+        <div id="left">
+            <img id="restobg" src="Main page/Restaurant.png">
+            <div id="duck-wrap">
+                <img src="Main page/Duck.png">
+            </div>
+        </div>
+
+        <div id="right">
+            <div id="logo-wrap">
+                <img id="logoduck" src="Main page/Logo_Duck.png">
+                <img id="logochase" src="Main page/Logo_Chase.png">
+            </div>
+
+            <div id="menu-content">
+                <div class="hs-label">High Score</div>
+                <div class="hs-value">0</div>
+                <button class="menu-btn" id="btn-start">Start Game</button>
+                <button class="menu-btn">Option</button>
+                <button class="menu-btn">Credits</button>
+            </div>
+        </div>
+
+        <img id="curtainbg" src="Main page/longcurtain.png">
+
+        <div id="overlay"></div>
+
+        <div id="cutscene1">
+            <div class="panel top-panel"><img src="Main Page - Animation-2/Start_Panel1.png"></div>
+            <div class="panel bottom-panel"><img src="Main Page - Animation-2/Start_Panel2.png"></div>
+        </div>
+        <div id="cutscene2"><img src="Main Page - Animation-2/Start_Panel3.png"></div>    
+        <div id="gameplay">
+            <img id="gameplay-sky" src="Main page/Sky.png">
+
+            <div id="stage-area">
+                <img id="map-track-1" class="map-track" src="gameplay/Endless_runner_assets/map.png">
+                <img id="map-track-2" class="map-track" src="gameplay/Endless_runner_assets/map.png">
+            </div>
+            <div id="gameplay-dark-overlay"></div>
+            <div id="gameplay-duck" style="left: 649px;">
+                <img id="duck-sprite" src="Duck_idle1.png" alt="Player Duck">
+            </div>
+            
+            <div id="game-ui">
+                <div id="logosmap">
+                    <img id="logoduck_map" src="Main page/Logo_Duck.png">
+                    <img id="logochase_map" src="Main page/Logo_Chase.png">
+                </div>
+                
+                <div id="scoreboard-panel">
+                    <img id="board-bg" src="gameplay/Endless_runner_assets/leaderboard.png">
+                    <div id="distance-txt">Distance Travelled: 
+                        <div id="distance-num-row"><span id="distance-val">000000</span></div>
+                    </div>
+                    <div id="seed-counter-wrap">
+                        <span id="seed-val">0</span> 
+                    </div>
+                </div>
+
+                <button id="powerup-btn" class="powerup-hidden">
+                    <img id="boost-img" src="gameplay/Powerup_on.png">
+                </button>
+            </div>
+
+
+
+            <div id="custom-pause-modal">
+                <div class="pause-menu-box">
+                    <button id="pause-action-resume" class="pause-menu-item-btn">
+                        <img src="Main page/Button_Play.png" alt="Resume Game">
+                    </button>
+                    <button id="pause-action-retry" class="pause-menu-item-btn">
+                        <img src="gameplay - pause/Pause_retry.png" alt="Retry Run">
+                    </button>
+                    <button id="pause-action-home" class="pause-menu-item-btn">
+                        <img src="gameplay - pause/Pause_home.png" alt="Back Home Screen">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameover-cutscene1">
+                <div class="end-panel end-top"><img src="gameplay - ending/Ending_panel1.png" alt="Ending Panel 1"></div>
+                <div class="end-panel end-bottom"><img src="gameplay - ending/Ending_panel2.png" alt="Ending Panel 2"></div>
+            </div>
+            <div id="gameover-cutscene2">
+                <img src="gameplay - ending/Ending_panel3.png" alt="Ending Panel 3">
+            </div>
+
+            <div id="gameover-stats-screen">
+                <div class="stats-board-wrapper">
+                    <img id="stats-bg-image" src="gameplay - ending/ending cut scene 4.png" alt="Stats Board">
+                    
+                    <div id="final-stats-data">
+                        <div class ="stat-box-row">ORDER UP!!</div>
+                        <div class="stat-box-row">Distance Travelled: <span id="end-distance-val">000000</span></div>
+                        <div class="stat-box-row"><img src="gameplay/Endless_runner_assets/coins.png"></img><span id="end-seed-val">0</span></div>
+                    </div>
+
+                    <div class="stats-action-buttons">
+                        <button id="end-action-retry" class="end-menu-btn">
+                            <img src="gameplay - pause/Pause_retry.png" alt="Retry Run">
+                        </button>
+                        <button id="end-action-home" class="end-menu-btn">
+                            <img src="gameplay - pause/Pause_home.png" alt="Back Home Screen">
+                        </button>
+                    </div>
+                </div>
+            </div>
+    
+    <button id="gameplay-pause-trigger">
+                    <img src="gameplay - pause/pause_button.png" alt="Pause Button">
+    </button>
+</div>
+
+<script src="main.js"></script>
+
+</body>
+</html>

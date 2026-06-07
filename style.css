@@ -1,0 +1,772 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #e5e5e5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: serif;
+    overflow: hidden;
+}
+
+#game {
+    width: 1400px;
+    height: 850px;
+    display: flex;
+    align-items: stretch;   
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+    transform-origin: top left;
+} 
+
+#skybg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+#left {
+    width: 55%;
+    height: 850px;       
+    position: relative;
+    z-index: 5;
+}
+
+#restobg {
+    position: absolute;
+    bottom: -264px;      
+    left: 0px;
+    width: 770px;        
+    height: 1272px;     
+    z-index: 1;
+}
+
+#duck-wrap {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;          
+    transform: translateX(-50%);
+    z-index: 3;
+}
+
+#duck-wrap img {
+    width: 450px;
+    height: auto;
+}
+
+#right {
+    width: 45%;
+    height: 850px;       
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    margin-right: 40px;
+    flex-direction: column;
+    align-items: center;
+    z-index: 85;        
+}
+
+#grass {
+    position: absolute;
+    height: 130px;
+    bottom: 0;          
+    right: 0;
+    width: 100%;        
+    object-fit: cover;
+    object-position: bottom;
+    z-index: 1;
+}
+
+
+#logo-wrap {
+    position: absolute;
+    top: 40px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+    z-index: 90;
+    animation: floatLogo 3s ease-in-out infinite;
+}
+
+@keyframes floatLogo {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(6px); }
+}
+
+#logoduck {
+    width: 465px;        /* ◄ Restored original size */
+    margin-top: -30px;
+    transform: translateX(100px); /* ◄ Restored original placement */
+    z-index: 2;
+}
+
+#logochase {
+    width: 593px;        /* ◄ Restored original size */
+    margin-top: -860px;  /* ◄ Restored negative margin to pull "CHASE" back to the top */
+    z-index: 1;
+}
+
+#logoduck, #logochase {
+    filter: drop-shadow(0px 4px 0px #6e3c12) drop-shadow(0px 8px 12px rgba(0,0,0,0.35));
+}
+
+/* MENU LINKS & CONTENT */
+#menu-content {
+    position: absolute;
+    top: 330px;
+    margin-right: -60px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 95;
+    color: #dca15d;
+    font-family: 'Jeju Hallasan', cursive;
+}
+
+.hs-label {
+    font-size: 42px;
+    margin-bottom: 2px;
+}
+
+.hs-value {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    color: #dca15d;
+    font-family: 'Jeju Hallasan', cursive;
+    font-size: 42px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: 0.12s ease;
+    text-shadow: 0px 2px 0px #9b6a35, 0px 4px 6px rgba(0,0,0,0.35);
+}
+
+.menu-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    color: #f0bb72;
+}
+
+.menu-btn:active {
+    transform: translateY(3px) scale(0.97);
+    text-shadow: 0px 1px 0px #9b6a35;
+    color: #c98b49;
+}
+
+.menu-hide {
+    opacity: 0 !important;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+#curtainbg {
+    position: absolute;
+    top: 0;
+    right: 0;                  
+    width: 45%;                
+    height: 105%;
+    object-fit: fill;
+    z-index: 70; /* LAYER 2: Covers the gameplay track, but renders under the black overlay */
+    transition: transform 1.4s ease-in-out, width 1.4s ease-in-out;
+}
+
+#curtainbg.curtain-open {
+    width: 100%;               
+}
+
+#curtainbg.curtain-up {
+    transform: translateY(-110%);
+    transition: transform 1.4s ease-in-out; 
+}
+
+#overlay {
+    position: absolute;
+    inset: 0;
+    background-color: #000000; /* Pure deep solid pitch black */
+    opacity: 0;
+    z-index: 90;               /* LAYER 3: Completely blocks everything out when active */
+    pointer-events: none;
+    transition: opacity 0.8s ease-in-out;
+}
+
+#overlay.show {
+    opacity: 0.7;
+}
+
+#cutscene1 {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+}
+
+#gameplay {
+    pointer-events: auto;  /* ← allows clicks through to buttons */
+    position: absolute;
+    inset: 0;
+}
+
+#cutscene1 {
+    z-index: 100; /* LAYER 4: Appears clearly over the solid black screen */
+    opacity: 0;
+}
+
+#cutscene1.show {
+    opacity: 1;
+}
+
+/* Base style for individual sliding comic cells */
+.panel {
+    position: absolute;
+    left: 50%;                     
+    opacity: 0;
+}
+
+.panel img {
+    width: 500px;                  
+}
+
+.top-panel {
+    top: 130px;                    
+}
+
+.bottom-panel {
+    top: 170px;                    
+}
+
+.top-panel.show {
+    animation: slideTopIn 1s forwards cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.bottom-panel.show {
+    animation: slideBottomIn 1s forwards cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes slideTopIn {
+    from { transform: translate(-150%, -40px); opacity: 0; }
+    to   { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@keyframes slideBottomIn {
+    from { transform: translate(100%, 40px); opacity: 0; }
+    to   { transform: translate(-50%, 0); opacity: 1; }
+}
+
+#cutscene2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0); 
+    z-index: 110; /* LAYER 5: Sits securely at the absolute top of the visual pile */
+    pointer-events: none;
+    opacity: 0;
+    transition: transform 0.6s cubic-bezier(0.34, 1.5, 0.64, 1), opacity 0.5s ease;
+}
+
+#cutscene2 img {
+    width: 700px;
+    height: 520px;            
+    object-fit: cover;        
+    object-position: bottom;  
+    display: block;
+}
+
+#cutscene2.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#cutscene2.fade-out {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9); 
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+@keyframes comicPopIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
+
+/*GAMEPLAY*/
+
+#gameplay {
+    position: absolute;       /* ◄ Added: Keeps gameplay track relative to the 1400px box */
+    inset: 0;                 /* Spans 100% height and width of #game */
+    opacity: 0;
+    z-index: 60;              /* ◄ Placed BELOW the curtain (70) so the curtain hides it! */
+    transition: opacity 1s;
+}
+
+#gameplay.show {
+    opacity: 1;
+}
+
+#countdown3 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 180px;
+    animation: pulse 1s infinite;
+}
+#gameplay-dark-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 50;  /* above track, below countdown */
+    opacity: 1;
+    transition: opacity 0.8s ease;
+    pointer-events: none;
+}
+
+#gameplay-dark-overlay.hidden {
+    opacity: 0;
+}
+@keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.2); }
+}
+
+#gameplay-sky {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+#stage-area {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px; 
+    height: 100%;
+    overflow: visible;
+    z-index: 2;
+    background: #cdaf7a;
+}
+
+.map-track {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    z-index: 1;
+}
+
+#logosmap{
+   position: absolute;
+    top: 30px;                 /* Distance from the top edge of the game container */
+    left: -100px;                /* Pushes it neatly into the left-side sky area */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 15;
+    margin-left: 30px;
+}
+
+#logoduck_map {
+    width: 325px;        /* ◄ Restored original size */
+    margin-top: -30px;
+    transform: translateX(100px); /* ◄ Restored original placement */
+    z-index: 2;
+}
+
+#logochase_map {
+    width: 400px;   
+    margin-left: 60px;    /* ◄ Restored original size */
+    margin-top: -600px;  /* ◄ Restored negative margin to pull "CHASE" back to the top */
+    z-index: 1;
+}
+
+#logoduck_map, #logochase_map {
+    filter: drop-shadow(0px 3px 0px #6e3c12) drop-shadow(0px 6px 8px rgba(0,0,0,0.3));
+}
+
+#scoreboard-panel {
+    position: absolute;
+    top: 0px;                 /* Matches the top level alignment of the left logo */
+    right: 90px;               /* Pushes it beautifully inside the right sky area */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 15;
+}
+
+#board-bg {
+    width: 250px;              /* Explicit width to size the wooden scoreboard correctly */
+    height: auto;
+}
+
+#distance-txt {
+    position: absolute;
+    top: 70px;                 /* ◄ Shifted upward to fit both text lines comfortably */
+    right: -35px;
+    transform: translateX(-50%);
+    font-family: 'Jeju Hallasan', cursive, serif;
+    font-size: 20px;           /* Slightly optimized size for dual-row layout spacing */
+    color: #552d10;            
+    text-align: center;
+    white-space: nowrap;
+}
+
+#distance-num-row {
+    font-size: 26px;           /* Makes the numbers pop out vividly */
+    margin-top: 6px;           /* Crisp spacing interval between the title and counter */
+    font-variant-numeric: tabular-nums; /* Prevents text jitter during running updates */
+}
+
+#seed-counter-wrap {
+    position: absolute;
+    top: 190px;                /* ◄ Adjusted down to match the lowercase board art */
+    right: 110px;              /* ◄ Offsets leftward to make room for your sunflower seed icon */
+    font-family: 'Jeju Hallasan', cursive, serif;
+    font-size: 24px;
+    color: #552d10;
+    white-space: nowrap;
+}
+
+#gameplay-pause-trigger {
+    position: fixed;        /* ← changed from absolute */
+    bottom: 20px;               
+    right: 20px;
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    z-index: 9999;
+    pointer-events: auto;
+    display: none;          /* ← hidden until game starts */
+    transition: transform 0.1s ease;
+}
+
+#gameplay-pause-trigger:hover { transform: scale(1.05); }
+#gameplay-pause-trigger:active { transform: scale(0.95); }
+
+/* ◄ FIXED: Added this rule to shrink the pause icon graphic down to a normal size */
+#gameplay-pause-trigger img {
+    width: 50px;               /* Changed from 90px to 50px */
+    height: auto;
+    filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.3));
+}
+
+
+
+
+
+
+
+#powerup-btn {
+    position: absolute;
+    bottom: 35px;
+    right: 130px;              /* Placed neatly right beside your 65px wide pause toggle */
+    background: #dca15d;
+    border: 3px solid #6e3c12;
+    border-radius: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0px 4px 0px #6e3c12;
+
+}
+
+#powerup-btn img {
+    width: 30px;
+    height: auto;
+}
+
+.powerup-hidden {
+    display: none !important;  /* Keeps it completely hidden until your code activates it */
+}
+
+#map-track-1 { 
+    top: 0;
+    z-index: 1; 
+}
+#map-track-2 { 
+    top: -850px;
+    z-index: 1;
+};
+
+#game-ui {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 15;
+}
+
+#gameplay-duck {
+    position: absolute;
+    top: 700px;
+    left: 650px;             /* ◄ FIXED: Changed from 650px to 211px to match the middle lane */
+    width: 100px;
+    height: 100px;
+    z-index: 45;
+}
+
+#gameplay-duck img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    display: block;
+}
+
+.game-obstacle {
+    position: absolute;
+    width: 166.6px;            /* Fills exactly 1 single track lane width completely */
+    height: auto;
+    z-index: 5;
+}
+
+.game-seed {
+    position: absolute;
+    width: 45px;               /* Centered scale footprint for seed collectibles */
+    height: 45px;
+    z-index: 6;
+}
+
+.invincible-flash {
+    animation: duckFlash 0.2s infinite alternate;
+}
+
+@keyframes duckFlash {
+    from { opacity: 0.4; filter: brightness(1.8) drop-shadow(0 0 8px #f0bb72); }
+    to { opacity: 1; filter: brightness(1) drop-shadow(0 0 2px #dca15d); }
+}
+
+
+#custom-pause-modal {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 150;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+}
+
+#custom-pause-modal.show {
+    display: flex;
+}
+
+.pause-menu-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.pause-menu-item-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.1s ease;
+}
+
+.pause-menu-item-btn:hover {
+    transform: scale(1.05);
+}
+
+.pause-menu-item-btn img {
+    width: 200px;
+    height: auto;
+}
+
+#pause-action-resume img{
+    width: 80px;
+    margin-bottom: -30px;
+}
+#pause-action-retry img{
+    width: 350px;
+    margin-bottom: -90px;
+}
+#pause-action-home img{
+    width: 350px;
+}
+
+
+
+
+
+
+/* ══════════════════════════════════════════
+   GAME OVER CINEMATIC & STATS OVERLAYS
+   ══════════════════════════════════════════ */
+#gameover-cutscene1 {
+    position: absolute;
+    inset: 0;
+    z-index: 95;
+    pointer-events: none;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+#gameover-cutscene1.show {
+    display: block;
+    opacity: 1;
+}
+
+.end-panel {
+    position: absolute;
+    left: 50%;
+    opacity: 0;
+}
+
+.end-panel img {
+    width: 500px;
+    height: auto;
+}
+
+.end-top { top: 120px; }
+.end-bottom { top: 200px; }
+
+.end-top.animate-in {
+    animation: slideTopIn 0.8s forwards cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.end-bottom.animate-in {
+    animation: slideBottomIn 0.8s forwards cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+#gameover-cutscene2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 96;
+    pointer-events: none;
+    display: none;
+    opacity: 0;
+    transition: transform 0.6s cubic-bezier(0.34, 1.5, 0.64, 1), opacity 0.5s ease;
+}
+
+#gameover-cutscene2.show {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#gameover-cutscene2 img {
+    width: 700px;
+    height: 520px;            
+    object-fit: cover;        
+    object-position: bottom;  
+    display: block;
+}
+
+/* FINAL SCOREBOARD STATS BANNER CONTAINER */
+/* ══════════════════════════════════════════
+   FULL-SCREEN GAME OVER STATS OVERLAY
+   ══════════════════════════════════════════ */
+
+#gameover-stats-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 650; 
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#gameover-stats-screen.show {
+    display: flex;
+    opacity: 1;
+}
+
+.stats-board-wrapper {
+    position: relative;
+    width: 100%;  
+    height: 100%; 
+}
+
+#stats-bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    z-index: 1;
+}
+
+/* Aligns values perfectly over the two parchment boxes in the artwork */
+#final-stats-data {
+    position: absolute;
+    top: 52%; /* Pushes numbers lower down to skip the header card graphics */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    gap: 52px; /* Precision spacing to center the text blocks inside both slots */
+    align-items: center;
+    z-index: 10;
+}
+
+.stat-box-row {
+    font-family: 'Jeju Hallasan', cursive, serif;
+    font-size: 42px; /* Nice bold size to fill the parchment boxes */
+    color: #ebb968;  /* Classic deep wood/parchment brown tone to pop against the background */
+    font-weight: bold;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.4);
+    width: 300px;
+    text-align: center;
+}
+
+/* Sits neatly directly below the stats slots layout framework */
+.stats-action-buttons {
+    position: absolute;
+    bottom: 14%; /* Positions menu buttons right onto the bottom landing strip */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    gap: 60px; /* Expands distance between buttons to match UI guidelines */
+    z-index: 15;
+}
+
+.end-menu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.1s ease;
+}
+
+.end-menu-btn:hover {
+    transform: scale(1.08);
+}
+
+.end-menu-btn img {
+    width: 190px; 
+    height: auto;
+    display: block;
+}
+
+
