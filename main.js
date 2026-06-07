@@ -166,6 +166,7 @@ let targetLaneX = 649;    // Tracks the center coordinates of the lane you want 
 // Animation System State Tracking
 let duckAnimationInterval = null;
 let currentRunFrame = 1;
+let highScore = 0;
 
 // Track Element Selectors
 const gameplayDuck = document.getElementById("gameplay-duck");
@@ -285,7 +286,7 @@ function processGameFrame(timestamp) {
     if (currentMilestoneChunk > lastSpeedMilestone) {
         lastSpeedMilestone = currentMilestoneChunk;
         
-        gameSpeed += 1; // Speeds up the scrolling map and moving objects
+        gameSpeed += 1.25; // Speeds up the scrolling map and moving objects
         
         // Decreases threshold interval so obstacles fly onto screen significantly faster
         spawnIntervalThreshold = Math.max(350, spawnIntervalThreshold - 80); 
@@ -330,9 +331,11 @@ function spawnRandomTrackItem() {
     // Track how many obstacles we spawn during this single execution frame
     let obstaclesSpawnedInWave = 0;
 
-    lanesPicked.forEach(randomLaneIndex => {
+    lanesPicked.forEach((randomLaneIndex, index) => {
         const itemLaneX = TRACK_LANES[randomLaneIndex];
-        let spawnTypeChoice = Math.random();
+        const spawnTypeChoice = (totalLanesToSpawn === 2 && index === 1) 
+            ? 1  
+            : Math.random();
         
         // Force the choice to be a seed if we have already spawned 2 obstacles in this wave
         if (obstaclesSpawnedInWave >= 2) {
@@ -466,11 +469,16 @@ pauseBtn.addEventListener("click", () => {
     pauseModal.classList.add("show");
 });
 
+
+
 resumeBtn.addEventListener("click", () => {
     pauseModal.classList.remove("show");
-    gameActive = true;
-    startDuckRunningAnimation();
-    requestAnimationFrame(processGameFrame);
+    
+    // Show dark overlay for countdown
+    document.getElementById("gameplay-dark-overlay").classList.remove("hidden");
+    
+    // Drop countdown then start game
+    dropCountdown(0);
 });
 
 retryBtn.addEventListener("click", () => {
@@ -570,8 +578,9 @@ function triggerGameOverSequence() {
     setTimeout(() => {
         endCutscene2.classList.remove("show");
         
-        // Pop numbers into scoreboard display wrappers
+        if (distanceTravelled > highScore) highScore = distanceTravelled;
         document.getElementById("end-distance-val").textContent = String(distanceTravelled).padStart(6, '0');
+        document.getElementById("end-highscore-val").textContent = String(highScore).padStart(6, '0');
         document.getElementById("end-seed-val").textContent = seedCount;
         
         // Reveal scoreboard panel box overlay

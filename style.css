@@ -683,11 +683,11 @@ body {
 /* ══════════════════════════════════════════
    FULL-SCREEN GAME OVER STATS OVERLAY
    ══════════════════════════════════════════ */
-
 #gameover-stats-screen {
     position: absolute;
     inset: 0;
-    z-index: 650; 
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 97;
     display: none;
     justify-content: center;
     align-items: center;
@@ -702,61 +702,73 @@ body {
 
 .stats-board-wrapper {
     position: relative;
-    width: 100%;  
-    height: 100%; 
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #stats-bg-image {
-    position: absolute;
-    inset: 0;
     width: 100%;
-    height: 100%;
-    object-fit: cover; 
-    z-index: 1;
+    height: auto;
 }
 
-/* Aligns values perfectly over the two parchment boxes in the artwork */
 #final-stats-data {
     position: absolute;
-    top: 52%; /* Pushes numbers lower down to skip the header card graphics */
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 15%;
     display: flex;
     flex-direction: column;
-    gap: 52px; /* Precision spacing to center the text blocks inside both slots */
     align-items: center;
-    z-index: 10;
-}
-
-.stat-box-row {
+    gap: 8px;
     font-family: 'Jeju Hallasan', cursive, serif;
-    font-size: 42px; /* Nice bold size to fill the parchment boxes */
-    color: #ebb968;  /* Classic deep wood/parchment brown tone to pop against the background */
-    font-weight: bold;
-    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.4);
-    width: 300px;
-    text-align: center;
+    color: #e7ca90;
 }
 
-/* Sits neatly directly below the stats slots layout framework */
+.stat-title {
+    font-size: 42px;
+    color: #d4853a;
+    text-shadow: 0px 3px 0px #4a2306;
+    margin-bottom: 10px;
+}
+
+.stat-line {
+    font-size: 22px;
+    color: #e7ca90;
+    text-shadow: 0px 2px 0px #4a2306;
+}
+
+.stat-number {
+    font-size: 28px;
+    color: #e7ca90;
+    margin-bottom: 8px;
+}
+
+.stat-seed {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 26px;
+    color: #e7ca90;
+    margin-top: 5px;
+}
+
+.stat-seed img {
+    width: 35px;
+    height: auto;
+}
+
 .stats-action-buttons {
     position: absolute;
-    bottom: 14%; /* Positions menu buttons right onto the bottom landing strip */
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 8%;
     display: flex;
-    flex-direction: row; 
+    flex-direction: column;
     align-items: center;
-    gap: 60px; /* Expands distance between buttons to match UI guidelines */
-    z-index: 15;
+    gap: 10px;
 }
 
-.end-menu-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    transition: transform 0.1s ease;
+.end-menu-btn img {
+    width: 220px;
+    height: auto;
 }
 
 .end-menu-btn:hover {
