@@ -686,42 +686,37 @@ body {
 #gameover-stats-screen {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.85);
     z-index: 97;
     display: none;
-    justify-content: center;
-    align-items: center;
     opacity: 0;
     transition: opacity 0.5s ease;
 }
 
 #gameover-stats-screen.show {
-    display: flex;
+    display: block;
     opacity: 1;
 }
 
-.stats-board-wrapper {
-    position: relative;
-    width: 500px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 #stats-bg-image {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
 }
 
 #final-stats-data {
     position: absolute;
     top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     font-family: 'Jeju Hallasan', cursive, serif;
     color: #e7ca90;
+    width: 100%;
 }
 
 .stat-title {
@@ -757,19 +752,29 @@ body {
     height: auto;
 }
 
+.stats-board-wrapper {
+    position: absolute;
+    inset: 0;
+}
+
 .stats-action-buttons {
     position: absolute;
-    bottom: 8%;
+    bottom: 30%;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
+
 .end-menu-btn img {
-    width: 220px;
+    width: 160px; /* ← shrink buttons a bit */
     height: auto;
+    display: block;
 }
+
 
 .end-menu-btn:hover {
     transform: scale(1.08);
