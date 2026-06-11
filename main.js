@@ -23,6 +23,8 @@ const topPanel    = document.querySelector(".top-panel");
 const bottomPanel = document.querySelector(".bottom-panel");
 const cutscene2   = document.getElementById("cutscene2");
 const gameplay    = document.getElementById("gameplay");
+const skipStartBtn = document.getElementById("skip-start-cutscene");
+const skipEndBtn = document.getElementById("skip-end-cutscene");    
 
 const countFiles = [
     "Countdown/Count_3.png",
@@ -100,6 +102,7 @@ startBtn.addEventListener("click", () => {
         cutscene1.classList.add("show");
         topPanel.classList.add("show");
         bottomPanel.classList.add("show");
+        skipStartBtn.style.display = "block"; 
     }, 2200);
 
     setTimeout(() => {
@@ -140,6 +143,7 @@ startBtn.addEventListener("click", () => {
 
     setTimeout(() => {
         initializeRunnerEngine();
+        skipStartBtn.style.display = "none";
     }, 9600); 
 }); 
 
@@ -166,7 +170,9 @@ let targetLaneX = 649;    // Tracks the center coordinates of the lane you want 
 // Animation System State Tracking
 let duckAnimationInterval = null;
 let currentRunFrame = 1;
-let highScore = 0;
+let highScore = parseInt(localStorage.getItem("duckChaseHighScore")) || 0;
+document.getElementById("menu-highscore").textContent = String(highScore).padStart(6, '0');
+let lastObstacleSpawnY = -999; // tracks when last obstacle was spawned
 
 // Track Element Selectors
 const gameplayDuck = document.getElementById("gameplay-duck");
@@ -315,73 +321,45 @@ function processGameFrame(timestamp) {
 }
 
 // 4. PRECISE LANE-LOCKED ITEM GENERATOR
-// 4. PRECISE LANE-LOCKED ITEM GENERATOR WITH CRATE OVERFLOW PREVENTION
 function spawnRandomTrackItem() {
-    // 35% chance to generate items across 2 lanes simultaneously to increase obstacle density
+    const tooClose = dynamicEntities.some(e => 
+        e.type === "obstacle" && e.topY < 150
+    );
+    if (tooClose) return;
+
     const totalLanesToSpawn = Math.random() > 0.65 ? 2 : 1;
     let lanesPicked = [];
 
     while (lanesPicked.length < totalLanesToSpawn) {
         let rLane = Math.floor(Math.random() * 3);
-        if (!lanesPicked.includes(rLane)) {
-            lanesPicked.push(rLane);
-        }
+        if (!lanesPicked.includes(rLane)) lanesPicked.push(rLane);
     }
-
-    // Track how many obstacles we spawn during this single execution frame
-    let obstaclesSpawnedInWave = 0;
 
     lanesPicked.forEach((randomLaneIndex, index) => {
         const itemLaneX = TRACK_LANES[randomLaneIndex];
-        const spawnTypeChoice = (totalLanesToSpawn === 2 && index === 1) 
-            ? 1  
-            : Math.random();
-        
-        // Force the choice to be a seed if we have already spawned 2 obstacles in this wave
-        if (obstaclesSpawnedInWave >= 2) {
-            spawnTypeChoice = 0.99; // Forces the seed branch condition below
-        }
+        // When 2 items spawn together, ALWAYS make second one a seed
+        const isObstacle = totalLanesToSpawn === 2 
+            ? index === 0  
+            : Math.random() < 0.55;
 
-        if (spawnTypeChoice < 0.90) {
-            // Track that an obstacle is being added to prevent blocking all three pathways
-            obstaclesSpawnedInWave++;
+        const entityElement = document.createElement("img");
 
-            // Spawn Obstacles (Dynamically choose between your two variants)
-            const entityElement = document.createElement("img");
+        if (isObstacle) {
             let obstacleType = Math.random() > 0.5 ? "Obstacle_1.png" : "Obstacle_2.png";
-            
             entityElement.src = `gameplay/Endless_runner_assets/${obstacleType}`;
             entityElement.className = "game-obstacle";
-            entityElement.style.width = `${LANE_WIDTH}px`; 
+            entityElement.style.width = `${LANE_WIDTH}px`;
             entityElement.style.left = `${itemLaneX}px`;
-            entityElement.style.top = "-120px"; 
-            
+            entityElement.style.top = "-120px";
             if (stageArea) stageArea.appendChild(entityElement);
-
-            dynamicEntities.push({
-                element: entityElement,
-                type: "obstacle",
-                lane: randomLaneIndex,
-                topY: -120
-            });
+            dynamicEntities.push({ element: entityElement, type: "obstacle", lane: randomLaneIndex, topY: -120 });
         } else {
-            // Spawns exactly ONE single seed per lane selection
-            const entityElement = document.createElement("img");
             entityElement.src = "gameplay/Endless_runner_assets/coins.png";
             entityElement.className = "game-seed";
-            
-            // Centered down the middle axis of the track lane
             entityElement.style.left = `${itemLaneX + (LANE_WIDTH - 45) / 2}px`;
-            entityElement.style.top = "-120px"; 
-            
+            entityElement.style.top = "-120px";
             if (stageArea) stageArea.appendChild(entityElement);
-
-            dynamicEntities.push({
-                element: entityElement,
-                type: "seed",
-                lane: randomLaneIndex,
-                topY: -120
-            });
+            dynamicEntities.push({ element: entityElement, type: "seed", lane: randomLaneIndex, topY: -120 });
         }
     });
 }
@@ -390,6 +368,7 @@ function spawnRandomTrackItem() {
 function processEntities() {
     if (!gameplayDuck) return;
     const duckRect = gameplayDuck.getBoundingClientRect();
+    const pad = 20; // shrink hitbox by 20px on each side
 
     for (let i = dynamicEntities.length - 1; i >= 0; i--) {
         const ent = dynamicEntities[i];
@@ -404,10 +383,12 @@ function processEntities() {
 
         const entRect = ent.element.getBoundingClientRect();
         
-        const hitDetect = !(duckRect.right < entRect.left || 
-                            duckRect.left > entRect.right || 
-                            duckRect.bottom < entRect.top || 
-                            duckRect.top > entRect.bottom);
+        const hitDetect = !(
+            duckRect.right - pad < entRect.left + pad || 
+            duckRect.left + pad > entRect.right - pad || 
+            duckRect.bottom - pad < entRect.top + pad || 
+            duckRect.top + pad > entRect.bottom - pad
+        );
 
         if (hitDetect) {
             if (ent.type === "seed") {
@@ -415,18 +396,14 @@ function processEntities() {
                 if (seedDisplay) seedDisplay.textContent = seedCount;
                 ent.element.remove();
                 dynamicEntities.splice(i, 1);
-
-                if (seedCount >= 10) {
-                    activateHyperBoostMode();
-                }
-            } 
-            else if (ent.type === "obstacle") {
+                if (seedCount >= 10) activateHyperBoostMode();
+            } else if (ent.type === "obstacle") {
                 if (isInvincible) {
                     ent.element.remove();
                     dynamicEntities.splice(i, 1);
                 } else {
                     gameActive = false;
-                    stopDuckAnimation(); 
+                    stopDuckAnimation();
                     triggerGameOverSequence();
                 }
             }
@@ -531,6 +508,7 @@ const endRetryBtn  = document.getElementById("end-action-retry");
 const endHomeBtn   = document.getElementById("end-action-home");
 
 function triggerGameOverSequence() {
+    skipEndBtn.style.display = "block";
     gameActive = false;
     stopDuckAnimation();
     document.getElementById("gameplay-pause-trigger").style.display = "none";
@@ -576,13 +554,17 @@ function triggerGameOverSequence() {
 
     // 7. Hide Panel 3, switch the sheet entirely over to the Scoreboard Panel
     setTimeout(() => {
+        skipEndBtn.style.display = "none";
         endCutscene2.classList.remove("show");
         
-        if (distanceTravelled > highScore) highScore = distanceTravelled;
+        if (distanceTravelled > highScore) {
+            highScore = distanceTravelled;
+            localStorage.setItem("duckChaseHighScore", highScore); // ← saves to browser
+        }
+        document.getElementById("menu-highscore").textContent = String(highScore).padStart(6, '0');
         document.getElementById("end-distance-val").textContent = String(distanceTravelled).padStart(6, '0');
         document.getElementById("end-highscore-val").textContent = String(highScore).padStart(6, '0');
         document.getElementById("end-seed-val").textContent = seedCount;
-        
         // Reveal scoreboard panel box overlay
         statsScreen.classList.add("show");
     }, 8000);
@@ -631,4 +613,37 @@ endRetryBtn.addEventListener("click", () => {
 // Send back to dashboard main menu screen index state layout
 endHomeBtn.addEventListener("click", () => {
     location.reload(); 
+});
+
+
+skipStartBtn.addEventListener("click", () => {
+    skipStartBtn.style.display = "none";
+    cutscene1.style.display = "none";
+    cutscene1.style.opacity = "0";
+    cutscene2.style.display = "none";
+    cutscene2.classList.remove("show", "fade-out");
+    overlay.classList.remove("show");
+    curtain.classList.add("curtain-up");
+    gameplay.classList.add("show");
+    initializeRunnerEngine();
+});
+
+skipEndBtn.addEventListener("click", () => {
+    skipEndBtn.style.display = "none";
+    endCutscene1.style.display = "none";
+    endCutscene1.style.opacity = "1";
+    endCutscene2.style.display = "none";
+    endCutscene2.style.opacity = "1";
+    endCutscene2.classList.remove("show");
+    
+    if (distanceTravelled > highScore) {
+        highScore = distanceTravelled;
+        localStorage.setItem("duckChaseHighScore", highScore);
+    }
+    document.getElementById("end-distance-val").textContent = String(distanceTravelled).padStart(6, '0');
+    document.getElementById("end-highscore-val").textContent = String(highScore).padStart(6, '0');
+    document.getElementById("end-seed-val").textContent = seedCount;
+    document.getElementById("menu-highscore").textContent = String(highScore).padStart(6, '0');
+    overlay.classList.add("show");
+    statsScreen.classList.add("show");
 });

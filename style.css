@@ -544,7 +544,7 @@ body {
     position: absolute;
     width: 45px;               /* Centered scale footprint for seed collectibles */
     height: 45px;
-    z-index: 6;
+    z-index: 8;
 }
 
 .invincible-flash {
