@@ -679,6 +679,8 @@ body {
     display: block;
 }
 
+
+
 /* FINAL SCOREBOARD STATS BANNER CONTAINER */
 /* ══════════════════════════════════════════
    FULL-SCREEN GAME OVER STATS OVERLAY
@@ -769,6 +771,15 @@ body {
 }
 
 
+
+.end-menu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.1s ease;
+}
+
 .end-menu-btn img {
     width: 160px; /* ← shrink buttons a bit */
     height: auto;
@@ -780,10 +791,29 @@ body {
     transform: scale(1.08);
 }
 
-.end-menu-btn img {
-    width: 190px; 
-    height: auto;
-    display: block;
+#end-action-retry img{
+    width: 270px;
+    margin-bottom: -20px;
+}
+#end-action-home img{
+    width: 270px;
+    margin-bottom: -60px;
 }
 
-
+.skip-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;        /* ← change from left:50% to right:20px */
+    transform: none;    /* ← remove the translateX */
+    background: rgba(0, 0, 0, 0.5);
+    color: #e7ca90;
+    border: 2px solid #e7ca90;
+    border-radius: 20px;
+    padding: 8px 24px;
+    font-family: 'Jeju Hallasan', bold, cursive;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 99999;
+    display: none;
+    pointer-events: auto;
+}

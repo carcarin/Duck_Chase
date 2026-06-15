@@ -24,7 +24,16 @@ const bottomPanel = document.querySelector(".bottom-panel");
 const cutscene2   = document.getElementById("cutscene2");
 const gameplay    = document.getElementById("gameplay");
 const skipStartBtn = document.getElementById("skip-start-cutscene");
-const skipEndBtn = document.getElementById("skip-end-cutscene");    
+const skipEndBtn = document.getElementById("skip-end-cutscene");
+// ============================================================
+// SOUND SYSTEM
+// ============================================================
+const sfxCurtain    = new Audio("sound-2/curtain.mp3");
+const sfxCountdown  = new Audio("sound-2/1 2 3 start.mp3");
+const sfxGameOver   = new Audio("sound-2/Game Over 2.mp3");
+const sfxClick1     = new Audio("sound-2/Click1.mp3");
+const sfxClick2     = new Audio("sound-2/Click2.mp3");
+const sfxSquawk     = new Audio("sound-2/squawk.wav");    
 
 const countFiles = [
     "Countdown/Count_3.png",
@@ -47,30 +56,38 @@ countdownImg.style.cssText = `
 `;
 
 function dropCountdown(index) {
-    if(!document.getElementById("countdown-img")) {
+    if (skipCountdown) return; // ← guard
+    if (index === 0) {
+        if (countdownRunning) return; // ← prevent double countdown
+        countdownRunning = true;
+    }
+
+    if (!document.getElementById("countdown-img")) {
         gameplay.appendChild(countdownImg);
     }
 
     if (index >= countFiles.length) {
-    setTimeout(() => {
-        countdownImg.remove();
-        // fade out the dark overlay
-        document.getElementById("gameplay-dark-overlay").classList.add("hidden");
-    }, 400);
+        setTimeout(() => {
+            countdownImg.remove();
+            document.getElementById("gameplay-dark-overlay").classList.add("hidden");
+            countdownRunning = false; // ← reset when done
+        }, 400);
 
-    gameActive = true;
-    startDuckRunningAnimation();
-    requestAnimationFrame(processGameFrame);
-    return;
-}
+        gameActive = true;
+        startDuckRunningAnimation();
+        requestAnimationFrame(processGameFrame);
+        return;
+    }
 
-    countdownImg.src = countFiles[index];
-    countdownImg.style.transition = "none";
-    countdownImg.style.top = "-550px";            
+    countdownImg.src = countFiles[index];       
     countdownImg.getBoundingClientRect();          
     
     countdownImg.style.transition = "top 0.4s cubic-bezier(0.34, 1.5, 0.64, 1)";
-    countdownImg.style.top = "0px"; // Brought down into clear frame vision               
+    countdownImg.style.top = "0px";
+    if (index === 0) {  // ← only play once at the start
+        sfxCountdown.currentTime = 0;
+        sfxCountdown.play();
+    }           
 
     const holdTime = index === 3 ? 600 : 850;
     
@@ -83,6 +100,7 @@ function dropCountdown(index) {
 }
 
 startBtn.addEventListener("click", () => {
+    sfxClick1.play();
     console.log("START CLICKED");
     startBtn.disabled = true;
 
@@ -90,7 +108,8 @@ startBtn.addEventListener("click", () => {
     logoWrap.classList.add("menu-hide");
 
     setTimeout(() => {
-        curtain.classList.add("curtain-open");
+    sfxCurtain.play();
+    curtain.classList.add("curtain-open");
     }, 100);
 
     setTimeout(() => {
@@ -141,10 +160,12 @@ startBtn.addEventListener("click", () => {
         curtain.classList.add("curtain-up");
     }, 8600);
 
-    setTimeout(() => {
+   setTimeout(() => {
+    if (!gameStarted) {  // ← only run if skip hasn't already started it
         initializeRunnerEngine();
         skipStartBtn.style.display = "none";
-    }, 9600); 
+    }
+}, 9600);
 }); 
 
 // ==========================================================================
@@ -173,6 +194,9 @@ let currentRunFrame = 1;
 let highScore = parseInt(localStorage.getItem("duckChaseHighScore")) || 0;
 document.getElementById("menu-highscore").textContent = String(highScore).padStart(6, '0');
 let lastObstacleSpawnY = -999; // tracks when last obstacle was spawned
+let gameStarted = false;
+let countdownRunning = false;
+let gameOverSequenceActive = false;
 
 // Track Element Selectors
 const gameplayDuck = document.getElementById("gameplay-duck");
@@ -220,6 +244,9 @@ function initializeRunnerEngine() {
     lastSpeedMilestone = 0;       
     dynamicEntities = [];
     lastTimestamp = 0;
+    gameStarted = false;
+    skipCountdown = false; // ← ADD
+    countdownRunning = false;
 
     // Force values back to the middle track lane instantly on startup
     targetLaneX = 650;
@@ -404,7 +431,8 @@ function processEntities() {
                 } else {
                     gameActive = false;
                     stopDuckAnimation();
-                    triggerGameOverSequence();
+                    sfxSquawk.play(); // ← ADD HERE
+                    triggerGameOverSequence();  
                 }
             }
         }
@@ -440,6 +468,7 @@ const retryBtn = document.getElementById("pause-action-retry");
 const homeBtn = document.getElementById("pause-action-home");
 
 pauseBtn.addEventListener("click", () => {
+    sfxClick2.play();
     if (!gameActive) return;
     gameActive = false;
     stopDuckAnimation();
@@ -449,6 +478,7 @@ pauseBtn.addEventListener("click", () => {
 
 
 resumeBtn.addEventListener("click", () => {
+    sfxClick2.play();
     pauseModal.classList.remove("show");
     
     // Show dark overlay for countdown
@@ -508,70 +538,72 @@ const endRetryBtn  = document.getElementById("end-action-retry");
 const endHomeBtn   = document.getElementById("end-action-home");
 
 function triggerGameOverSequence() {
+    gameOverSequenceActive = true;
     skipEndBtn.style.display = "block";
     gameActive = false;
     stopDuckAnimation();
     document.getElementById("gameplay-pause-trigger").style.display = "none";
-
-    // 1. Drop curtain down first
+    
     curtain.classList.remove("curtain-up");
     curtain.classList.add("curtain-open");
 
-    // 2. Only AFTER curtain fully covers screen, show overlay and cutscenes
     setTimeout(() => {
+        if (!gameOverSequenceActive) return; // ← guard
         overlay.classList.add("show");
-    }, 1600); // wait for curtain animation (1.4s) to finish
+    }, 1600);
 
     setTimeout(() => {
+        if (!gameOverSequenceActive) return; // ← guard
         endCutscene1.style.display = "block";
         endCutscene1.style.opacity = "1";
         endTopPanel.classList.add("animate-in");
         endBottomPanel.classList.add("animate-in");
     }, 2400);
 
-    // 3. Slide in Panel 1 & Panel 2
     setTimeout(() => {
+        if (!gameOverSequenceActive) return; // ← guard
         endCutscene1.classList.add("show");
         endTopPanel.classList.add("animate-in");
         endBottomPanel.classList.add("animate-in");
     }, 2200);
 
-    // 4. Fade out Panel 1 & Panel 2
     setTimeout(() => {
+        if (!gameOverSequenceActive) return; // ← guard
         endCutscene1.style.opacity = "0";
     }, 4500);
 
-    // 5. Hide panel 1/2 container completely, then bring up Panel 3
     setTimeout(() => {
+        if (!gameOverSequenceActive) return; // ← guard
         endCutscene1.classList.remove("show");
         endCutscene2.classList.add("show");
     }, 5100);
 
-    // 6. Fade out Panel 3
     setTimeout(() => {
+        if (!gameOverSequenceActive) return; // ← guard
         endCutscene2.style.opacity = "0";
     }, 7400);
 
-    // 7. Hide Panel 3, switch the sheet entirely over to the Scoreboard Panel
     setTimeout(() => {
+        if (!gameOverSequenceActive) return; // ← guard
         skipEndBtn.style.display = "none";
         endCutscene2.classList.remove("show");
+        sfxGameOver.play();
         
         if (distanceTravelled > highScore) {
             highScore = distanceTravelled;
-            localStorage.setItem("duckChaseHighScore", highScore); // ← saves to browser
+            localStorage.setItem("duckChaseHighScore", highScore);
         }
         document.getElementById("menu-highscore").textContent = String(highScore).padStart(6, '0');
         document.getElementById("end-distance-val").textContent = String(distanceTravelled).padStart(6, '0');
         document.getElementById("end-highscore-val").textContent = String(highScore).padStart(6, '0');
         document.getElementById("end-seed-val").textContent = seedCount;
-        // Reveal scoreboard panel box overlay
         statsScreen.classList.add("show");
     }, 8000);
 }
 
 // Reset everything smoothly on a GameOver board retry request
 endRetryBtn.addEventListener("click", () => {
+    gameOverSequenceActive = false;
     statsScreen.classList.remove("show");
     overlay.classList.remove("show");
     
@@ -617,18 +649,26 @@ endHomeBtn.addEventListener("click", () => {
 
 
 skipStartBtn.addEventListener("click", () => {
+    gameStarted = true;     // ← set FIRST so 9600ms timeout is blocked
     skipStartBtn.style.display = "none";
     cutscene1.style.display = "none";
     cutscene1.style.opacity = "0";
+    cutscene1.classList.remove("show");
     cutscene2.style.display = "none";
-    cutscene2.classList.remove("show", "fade-out");
+    cutscene2.style.opacity = "0";
+    cutscene2.style.transform = "translate(-50%, -50%) scale(0)";
+    cutscene2.classList.remove("show");
+    cutscene2.classList.remove("fade-out");
     overlay.classList.remove("show");
     curtain.classList.add("curtain-up");
     gameplay.classList.add("show");
-    initializeRunnerEngine();
+    document.getElementById("gameplay-dark-overlay").classList.remove("hidden");
+    initializeRunnerEngine(); // ← skipCountdown resets inside here
 });
 
 skipEndBtn.addEventListener("click", () => {
+    gameOverSequenceActive = false;
+    sfxGameOver.play(); //
     skipEndBtn.style.display = "none";
     endCutscene1.style.display = "none";
     endCutscene1.style.opacity = "1";
