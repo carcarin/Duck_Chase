@@ -32,7 +32,9 @@ const sfxCurtain    = new Audio("sound-2/curtain.mp3");
 const sfxCountdown  = new Audio("sound-2/1 2 3 start.mp3");
 const sfxGameOver   = new Audio("sound-2/Game Over 2.mp3");
 const sfxClick1     = new Audio("sound-2/Click1.mp3");
+sfxClick1.volume = 1.0; // ← add this
 const sfxClick2     = new Audio("sound-2/Click2.mp3");
+sfxClick2.volume = 1.0; 
 const sfxSquawk     = new Audio("sound-2/squawk.wav");    
 
 const countFiles = [
@@ -100,6 +102,7 @@ function dropCountdown(index) {
 }
 
 startBtn.addEventListener("click", () => {
+    gameStarted = false;
     sfxClick1.play();
     console.log("START CLICKED");
     startBtn.disabled = true;
@@ -237,14 +240,13 @@ function updateDuckPosition() {
 function initializeRunnerEngine() {
     playerLane = 1;
     spawnTimer = -500;
-    gameSpeed = 6;
+    gameSpeed = 8;
     distanceTravelled = 0;
     seedCount = 0;
     spawnIntervalThreshold = 750; 
     lastSpeedMilestone = 0;       
     dynamicEntities = [];
     lastTimestamp = 0;
-    gameStarted = false;
     skipCountdown = false; // ← ADD
     countdownRunning = false;
 
@@ -489,6 +491,7 @@ resumeBtn.addEventListener("click", () => {
 });
 
 retryBtn.addEventListener("click", () => {
+    sfxClick1.play();
     pauseModal.classList.remove("show");
     
     // Reset all game state
@@ -523,6 +526,7 @@ retryBtn.addEventListener("click", () => {
 });
 
 homeBtn.addEventListener("click", () => {
+    sfxClick1.play();
     location.reload();
 });
 
@@ -573,9 +577,15 @@ function triggerGameOverSequence() {
     }, 4500);
 
     setTimeout(() => {
-        if (!gameOverSequenceActive) return; // ← guard
+        if (!gameOverSequenceActive) return;
         endCutscene1.classList.remove("show");
-        endCutscene2.classList.add("show");
+        endCutscene1.style.display = "none";
+        endCutscene2.style.display = "block";
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                endCutscene2.classList.add("show");
+            });
+        });
     }, 5100);
 
     setTimeout(() => {
@@ -603,6 +613,7 @@ function triggerGameOverSequence() {
 
 // Reset everything smoothly on a GameOver board retry request
 endRetryBtn.addEventListener("click", () => {
+    sfxClick1.play();
     gameOverSequenceActive = false;
     statsScreen.classList.remove("show");
     overlay.classList.remove("show");
@@ -644,6 +655,7 @@ endRetryBtn.addEventListener("click", () => {
 
 // Send back to dashboard main menu screen index state layout
 endHomeBtn.addEventListener("click", () => {
+    sfxClick1.play();
     location.reload(); 
 });
 
@@ -686,4 +698,112 @@ skipEndBtn.addEventListener("click", () => {
     document.getElementById("menu-highscore").textContent = String(highScore).padStart(6, '0');
     overlay.classList.add("show");
     statsScreen.classList.add("show");
+});
+
+
+
+
+// ==========================================================================
+// OPTIONS & CREDITS ACTIVE LIFECYCLE HANDLERS
+// ==========================================================================
+
+// Element Selectors References
+const optionBtn    = document.querySelectorAll(".menu-btn")[1]; // Targets second dashboard button
+const creditsBtn   = document.querySelectorAll(".menu-btn")[2]; // Targets third dashboard button
+
+const optionModal  = document.getElementById("option-modal");
+const optionClose  = document.getElementById("option-close");
+const creditsModal = document.getElementById("credits-modal");
+const creditsClose = document.getElementById("credits-close");
+const creditsRoll  = document.getElementById("credits-roll");
+
+const musicSlider  = document.getElementById("music-volume");
+const sfxSlider    = document.getElementById("sfx-volume");
+
+// Array reference to audio objects to dynamically change volume settings on feedback change
+const sfxAssetsList = [sfxCurtain, sfxCountdown, sfxGameOver, sfxClick1, sfxClick2, sfxSquawk];
+
+// --- OPTIONS MODAL LOGIC ---
+optionBtn.addEventListener("click", () => {
+    sfxClick1.play();
+    optionModal.style.display = "flex";
+});
+
+optionClose.addEventListener("click", () => {
+    sfxClick2.play();
+    optionModal.style.display = "none";
+});
+
+// Sound FX Volume Slider Tracker Updates
+sfxSlider.addEventListener("input", (e) => {
+    const targetVolume = parseFloat(e.target.value);
+    sfxAssetsList.forEach(sfxTrack => {
+        if (sfxTrack) sfxTrack.volume = targetVolume;
+    });
+});
+
+// Music Slider Tracker Updates (Placeholder for when you add game background music tracks)
+musicSlider.addEventListener("input", (e) => {
+    const targetVolume = parseFloat(e.target.value);
+    console.log(`Global Background Music Track Volume changed to: ${targetVolume}`);
+    // If you add a background music element later (e.g. bgMusic.volume = targetVolume;)
+});
+
+
+// --- CREDITS  LOGIC ---
+// --- CREDITS MODAL LOGIC ---
+creditsBtn.addEventListener("click", () => {
+    sfxClick1.play();
+    
+    // Hide main menu title logo and links layout smoothly
+    menu.classList.add("menu-hide");
+    logoWrap.classList.add("menu-hide");
+
+    // Close the stage curtain over the left panel display view
+    sfxCurtain.play();
+    curtain.classList.remove("curtain-up");
+    curtain.classList.add("curtain-open");
+
+    // Once the curtain is fully expanded, bring up the dark overlay wrapper
+    setTimeout(() => {
+        creditsModal.style.display = "flex";
+        
+        // ╔════════════════════════════════════════════════════════════╗
+        // ║ FIX: Change "visible" to "fade-in" to match your style.css  ║
+        // ╚════════════════════════════════════════════════════════════╝
+        requestAnimationFrame(() => {
+            creditsModal.classList.add("fade-in"); 
+        });
+
+        // Safe animation restart clean cycle
+        creditsRoll.classList.remove("start-credits-animation");
+        creditsRoll.getBoundingClientRect(); // Layout engine reflow trigger
+        creditsRoll.classList.add("start-credits-animation");
+    }, 1400); // 1.4s matches curtain extension time exactly
+});
+
+creditsClose.addEventListener("click", () => {
+    sfxClick2.play();
+    
+    // 1. Fade out the black screen overlay smoothly
+    creditsModal.classList.remove("fade-in");
+
+    // Wait for the black fade to finish before messing with the curtain
+    setTimeout(() => {
+        creditsRoll.classList.remove("start-credits-animation");
+        creditsModal.style.display = "none";
+
+        // 2. CONTRACT THE CURTAIN TO THE RIGHT (Removes 100% width, returns to original 45%)
+        curtain.classList.remove("curtain-open");
+        
+        sfxCurtain.currentTime = 0;
+        sfxCurtain.play();
+
+        // 3. Bring the home menu and logos back once the curtain is contracted
+        setTimeout(() => {
+            menu.classList.remove("menu-hide");
+            logoWrap.classList.remove("menu-hide");
+        }, 1400); // 1.4s matches your CSS curtain transition time
+
+    }, 600); // 600ms matches your black screen fade-out time
 });

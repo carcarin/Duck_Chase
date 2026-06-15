@@ -642,8 +642,8 @@ body {
     height: auto;
 }
 
-.end-top { top: 120px; }
-.end-bottom { top: 200px; }
+.end-top { top: 120px;}
+.end-bottom { top: 600px; margin-top: -440px ;}
 
 .end-top.animate-in {
     animation: slideTopIn 0.8s forwards cubic-bezier(0.25, 1, 0.5, 1);
@@ -816,4 +816,265 @@ body {
     z-index: 99999;
     display: none;
     pointer-events: auto;
+}
+
+
+/* ==========================================================================
+   UPDATED OPTIONS & CREDITS MODALS VISUAL PRESENTATION
+   ========================================================================== */
+
+/* CHANGED: Removed #credits-modal from here so it doesn't fight over backgrounds */
+#option-modal {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    display: none; /* Controlled via JS toggles */
+    justify-content: center;
+    align-items: center;
+    z-index: 200; /* Ensure it stays above main background elements */
+    pointer-events: auto;
+}
+
+/* Small Option Panel Content Box */
+.option-box {
+    background: #cdaf7a;
+    border: 5px solid #6e3c12;
+    border-radius: 16px;
+    padding: 30px 40px;
+    width: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.45);
+}
+
+.option-title {
+    font-family: 'Jeju Hallasan', cursive, serif;
+    font-size: 38px;
+    color: #6e3c12;
+    margin-bottom: 10px;
+    text-shadow: 0px 2px 0px rgba(255,255,255,0.3);
+}
+
+.option-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-family: 'Jeju Hallasan', cursive, serif;
+    font-size: 24px;
+    color: #552d10;
+}
+
+.option-row input[type="range"] {
+    accent-color: #6e3c12;
+    cursor: pointer;
+    width: 200px;
+}
+
+/* Movie Credits Roll System Layouts */
+#credits-modal {
+    position: absolute;
+    inset: 0;
+    background: rgb(0, 0, 0); /* Deep opaque background screen */
+    display: none; 
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    pointer-events: auto;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out; /* Smoothly fades the sheer black in/out */
+}
+
+/* Class helper to cleanly trigger our opacity fade in/out via JS */
+#credits-modal.fade-in {
+    opacity: 1;
+}
+
+#credits-roll {
+    position: absolute;
+    top: 100%; 
+    width: 100%;
+    text-align: center;
+    pointer-events: none;
+}
+
+.credits-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #cdaf7a;
+    font-family: 'Jeju Hallasan', cursive, serif;
+}
+
+h1.credits-title, .credits-title {
+    font-size: 54px;
+    color: #cdaf7a;
+    margin-bottom: 40px;
+    letter-spacing: 2px;
+}
+
+#credits-title{
+    font-size: 4rem;
+    color: hsl(32, 100%, 90%);
+}
+
+.credits-subtitle {
+    color: #ffe4c4;
+    font-style: italic;
+}
+
+.credits-section {
+    margin-bottom: 40px; /* Puts nice spacing between the departments */
+    text-align: center;
+}
+
+.credits-section h2 {
+    font-size: 1.5rem;
+    font-family: 'Jeju Hallasan', serif;
+    color: #f1d5a4; /* Distinct color for the department headers */
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+}
+
+.credits-section h3 {
+    font-size: 1.3rem;
+    font-family: 'Jeju Hallasan', serif;
+    color: #cdaf7a; /* Secondary color for roles */
+    margin-top: 10px;
+    margin-bottom: 2px;
+}
+
+.credits-section p {
+    font-size: 1.1rem;
+    font-family: 'Jeju Hallasan', serif;
+    color: #f6e0bb; /* Softer white for the actual names */
+    margin-bottom: 15px;
+}
+
+.credits-name {
+    font-size: 32px;
+    font-family: 'Jeju Hallasan', serif;
+    margin-top: 5px;
+    color: #cdaf7a;
+}
+
+/* Trigger animation for active scroll tracking */
+.start-credits-animation {
+    animation: movieRollUp 16s linear forwards; /* Made slightly slower for easier reading */
+}
+
+@keyframes movieRollUp {
+    0% { top: 100%; }
+    100% { top: -120%; } /* Changed to -120% so the last text line clears the screen */
+}
+
+/* Pin smaller BACK button to bottom right corner out of scroll path */
+.menu-btn.credits-back-btn {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    font-size: 24px; /* Shrunk down size */
+    text-shadow: 0px 1px 0px #9b6a35;
+    z-index: 210;
+}
+
+.menu-btn.credits-back-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+}
+
+#credits-gif {
+    width: 60%;
+    mix-blend-mode: screen;
+}
+
+#controls-hint {
+    position: absolute;
+    margin-left: 70px;
+    top: 280px;
+    left: 20px;
+    width: 220px;
+    background: #c8873a;
+    border: 4px solid #6e3c12;
+    border-radius: 8px;
+    box-shadow: 0px 4px 0px #6e3c12, inset 0px 0px 12px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    z-index: 15;
+}
+
+.controls-keys-row {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    margin: 4px 0;
+}
+
+.controls-img {
+    width: 70px;
+    height: auto;
+    mix-blend-mode: screen;
+}
+
+
+.controls-text {
+    color: #f2d0a9;
+    font-family: 'Jeju Hallasan', cursive;
+    font-size: 16px;
+    text-align: center;
+    text-shadow: 0px 2px 0px #6e3c12;
+}
+
+.controls-label {
+    color: #f2d0a9;
+    font-family: 'Jeju Hallasan', cursive;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 0px 2px 0px #6e3c12;
+    margin-bottom: 4px;
+    letter-spacing: 2px;
+}
+
+.controls-divider {
+    width: 80%;
+    height: 2px;
+    background: #dca15d;
+    margin: 6px 0;
+    opacity: 0.5;
+}
+
+.controls-step {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin: 4px 0;
+}
+
+.step-num {
+    font-family: 'Jeju Hallasan', cursive;
+    font-size: 22px;
+    color: #6e3c12;
+    background: #dca15d;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: bold;
+    border: 2px solid #6e3c12;
+}
+
+.step-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }

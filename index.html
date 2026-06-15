@@ -62,6 +62,43 @@
                     <img id="logoduck_map" src="Main page/Logo_Duck.png">
                     <img id="logochase_map" src="Main page/Logo_Chase.png">
                 </div>
+
+                <div id="controls-hint">
+                    <p class="controls-label">HOW TO PLAY</p>
+                    <div class="controls-divider"></div>
+
+                    <div class="controls-step">
+                        <span class="step-num">1</span>
+                        <div class="step-content">
+                            <div class="controls-keys-row">
+                                <img src="A_D_key_instructions.png" class="controls-img">
+                                <img src="Left_right_key_instructions.png" class="controls-img">
+                            </div>
+                            <p class="controls-text">Use A/D or ← → to switch lanes</p>
+                        </div>
+                    </div>
+
+                    <div class="controls-step">
+                        <span class="step-num">2</span>
+                        <div class="step-content">
+                            <p class="controls-text">⚠️ Dodge obstacles or it's game over!</p>
+                        </div>
+                    </div>
+
+                    <div class="controls-step">
+                        <span class="step-num">3</span>
+                        <div class="step-content">
+                            <p class="controls-text">🌱 Collect seeds along the way</p>
+                        </div>
+                    </div>
+
+                    <div class="controls-step">
+                        <span class="step-num">4</span>
+                        <div class="step-content">
+                            <p class="controls-text">⚡ Get 10 seeds to activate BOOST!</p>
+                        </div>
+                    </div>
+                </div>
                 
                 <div id="scoreboard-panel">
                     <img id="board-bg" src="gameplay/Endless_runner_assets/leaderboard.png">
@@ -136,9 +173,81 @@
     <button id="gameplay-pause-trigger">
         <img src="gameplay - pause/pause_button.png" alt="Pause Button">
     </button>
-</div>
+
+
+    <!-- OPTION MODAL -->
+    <div id="option-modal">
+        <div class="option-box">
+            <div class="option-title">OPTIONS</div>
+            <div class="option-row">
+                <label>Music</label>
+                <input type="range" id="music-volume" min="0" max="1" step="0.1" value="1">
+            </div>
+            <div class="option-row">
+                <label>Sound FX</label>
+                <input type="range" id="sfx-volume" min="0" max="1" step="0.1" value="1">
+            </div>
+            <button class="menu-btn" id="option-close">BACK</button>
+        </div>
+    </div>
+
+    <!-- CREDITS MODAL -->
+    <div id="credits-modal">
+        <div id="credits-roll">
+            <h1 id="credits-title">DUCK CHASE</h1>
+                <p class="credits-subtitle">presents</p>
+                <br><br>
+
+                <!-- Your awesome team roles layout -->
+                <div class="credits-section">
+                    <h2>PRODUCTION & DESIGN</h2>
+                    <h3>Game Directors</h3>
+                    <p>Carrisa, Erika</p>
+                    <h3>Narrative Designers</h3>
+                    <p>Erika, Khalisha</p>
+                </div>
+
+                <div class="credits-section">
+                    <h2>ENGINEERING</h2>
+                    <h3>Lead Developer</h3>
+                    <p>Carrisa</p>
+                    <h3>UI/UX Programmer</h3>
+                    <p>Carrisa</p>
+                </div>
+
+                <div class="credits-section">
+                    <h2>ART & ANIMATION</h2>
+                    <h3>Concept Artist</h3>
+                    <p>Erika</p>
+                    <h3>Lead Animator</h3>
+                    <p>Erika</p>
+                    <h3>UI/UX Designer</h3>
+                    <p>Erika</p>
+                </div>
+
+                <div class="credits-section">
+                    <h2>AUDIO</h2>
+                    <h3>Sound Designer</h3>
+                    <p>Khalisha</p>
+                </div>
+            <img id="credits-gif" src="additional/boing.gif">
+        </div>
+        <button class="menu-btn credits-back-btn" id="credits-close">BACK</button>
+    </div>
+
+    </div>
 
 <script src="main.js"></script>
 
 </body>
 </html>
+
+
+Game Director: Carrisa, Erika 
+Narrative Designer: Erika, Khalisha 
+Developer: Carrisa 
+UI/UX Programmer: Carrisa 
+Concept Artist: Erika 
+Lead Animator: Erika
+UI/UX Designer: Erika 
+Sound Designer: Khalisha 
