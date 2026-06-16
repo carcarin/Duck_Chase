@@ -35,7 +35,14 @@ const sfxClick1     = new Audio("sound-2/Click1.mp3");
 sfxClick1.volume = 1.0; // ← add this
 const sfxClick2     = new Audio("sound-2/Click2.mp3");
 sfxClick2.volume = 1.0; 
-const sfxSquawk     = new Audio("sound-2/squawk.wav");    
+const sfxSquawk     = new Audio("sound-2/squawk.wav");   
+const bgmMenu     = new Audio("sound-2/Main menu.mp3");
+const bgmGameplay = new Audio("sound-2/Gameplay BGM.mp3");
+bgmMenu.loop = true;
+bgmGameplay.loop = true;
+bgmMenu.volume = 0.5;
+bgmGameplay.volume = 0.5; 
+bgmMenu.play();
 
 const countFiles = [
     "Countdown/Count_3.png",
@@ -73,6 +80,8 @@ function dropCountdown(index) {
             countdownImg.remove();
             document.getElementById("gameplay-dark-overlay").classList.add("hidden");
             countdownRunning = false; // ← reset when done
+            bgmGameplay.currentTime = 0; // ← ADD
+            bgmGameplay.play(); 
         }, 400);
 
         gameActive = true;
@@ -104,6 +113,8 @@ function dropCountdown(index) {
 startBtn.addEventListener("click", () => {
     gameStarted = false;
     sfxClick1.play();
+    bgmMenu.pause();        // ← stop menu music
+    bgmMenu.currentTime = 0;
     console.log("START CLICKED");
     startBtn.disabled = true;
 
@@ -179,6 +190,7 @@ const TRACK_LANES = [0, LANE_WIDTH, LANE_WIDTH * 2]; // For spawning objects cle
 
 
 const DUCK_LANE_POSITIONS = [483, 649, 816];
+let totalSeedsNonBoost = 0; // tracks seeds outside of boost only
 let playerLane = 1;         // Spawns in the middle lane (Index 1)
 let gameActive = false;
 let gameSpeed = 6;          
@@ -238,6 +250,7 @@ function updateDuckPosition() {
 
 // 2. RUNNER ENGINE LIFECYCLE INITIALIZER
 function initializeRunnerEngine() {
+    totalSeedsNonBoost = 0;
     playerLane = 1;
     spawnTimer = -500;
     gameSpeed = 8;
@@ -425,6 +438,9 @@ function processEntities() {
                 if (seedDisplay) seedDisplay.textContent = seedCount;
                 ent.element.remove();
                 dynamicEntities.splice(i, 1);
+                if (!isInvincible) {
+                    totalSeedsNonBoost++; // ← only count if NOT in boost mode
+                }
                 if (seedCount >= 10) activateHyperBoostMode();
             } else if (ent.type === "obstacle") {
                 if (isInvincible) {
@@ -495,6 +511,7 @@ retryBtn.addEventListener("click", () => {
     pauseModal.classList.remove("show");
     
     // Reset all game state
+    totalSeedsNonBoost = 0;
     distanceTravelled = 0;
     seedCount = 0;
     gameSpeed = 6;
@@ -542,6 +559,8 @@ const endRetryBtn  = document.getElementById("end-action-retry");
 const endHomeBtn   = document.getElementById("end-action-home");
 
 function triggerGameOverSequence() {
+    bgmGameplay.pause();        // ← ADD
+    bgmGameplay.currentTime = 0;
     gameOverSequenceActive = true;
     skipEndBtn.style.display = "block";
     gameActive = false;
@@ -607,6 +626,7 @@ function triggerGameOverSequence() {
         document.getElementById("end-distance-val").textContent = String(distanceTravelled).padStart(6, '0');
         document.getElementById("end-highscore-val").textContent = String(highScore).padStart(6, '0');
         document.getElementById("end-seed-val").textContent = seedCount;
+        document.getElementById("end-seed-val").textContent = totalSeedsNonBoost;
         statsScreen.classList.add("show");
     }, 8000);
 }
@@ -619,6 +639,7 @@ endRetryBtn.addEventListener("click", () => {
     overlay.classList.remove("show");
     
     // Reset properties to default conditions
+    totalSeedsNonBoost = 0;
     distanceTravelled = 0;
     seedCount = 0;
     gameSpeed = 6;
@@ -655,6 +676,7 @@ endRetryBtn.addEventListener("click", () => {
 
 // Send back to dashboard main menu screen index state layout
 endHomeBtn.addEventListener("click", () => {
+    bgmGameplay.pause();
     sfxClick1.play();
     location.reload(); 
 });
@@ -696,6 +718,7 @@ skipEndBtn.addEventListener("click", () => {
     document.getElementById("end-highscore-val").textContent = String(highScore).padStart(6, '0');
     document.getElementById("end-seed-val").textContent = seedCount;
     document.getElementById("menu-highscore").textContent = String(highScore).padStart(6, '0');
+    document.getElementById("end-seed-val").textContent = totalSeedsNonBoost;
     overlay.classList.add("show");
     statsScreen.classList.add("show");
 });
@@ -745,8 +768,8 @@ sfxSlider.addEventListener("input", (e) => {
 // Music Slider Tracker Updates (Placeholder for when you add game background music tracks)
 musicSlider.addEventListener("input", (e) => {
     const targetVolume = parseFloat(e.target.value);
-    console.log(`Global Background Music Track Volume changed to: ${targetVolume}`);
-    // If you add a background music element later (e.g. bgMusic.volume = targetVolume;)
+    bgmMenu.volume = targetVolume;
+    bgmGameplay.volume = targetVolume;
 });
 
 
@@ -806,4 +829,11 @@ creditsClose.addEventListener("click", () => {
         }, 1400); // 1.4s matches your CSS curtain transition time
 
     }, 600); // 600ms matches your black screen fade-out time
+});
+
+
+musicVolume.addEventListener("input", (e) => {
+    const vol = parseFloat(e.target.value);
+    bgmMenu.volume = vol;
+    bgmGameplay.volume = vol;
 });

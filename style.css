@@ -916,12 +916,13 @@ h1.credits-title, .credits-title {
 }
 
 #credits-title{
-    font-size: 4rem;
+    font-size: 3rem;
     color: hsl(32, 100%, 90%);
 }
 
 .credits-subtitle {
     color: #ffe4c4;
+    font-size: 15px;
     font-style: italic;
 }
 
@@ -987,6 +988,8 @@ h1.credits-title, .credits-title {
 #credits-gif {
     width: 60%;
     mix-blend-mode: screen;
+    display: block;
+    margin: 0 auto;
 }
 
 #controls-hint {
