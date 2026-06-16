@@ -45,7 +45,14 @@ bgmMenu.loop = true;
 bgmGameplay.loop = true;
 bgmMenu.volume = 0.5;
 bgmGameplay.volume = 0.5; 
-bgmMenu.play();
+
+let menuMusicStarted = false;
+document.addEventListener("click", () => {
+    if (!menuMusicStarted) {
+        bgmMenu.play();
+        menuMusicStarted = true;
+    }
+}, { once: false });
 
 const countFiles = [
     "Countdown/Count_3.png",
@@ -659,7 +666,6 @@ endRetryBtn.addEventListener("click", () => {
     sfxCountdown.pause();
     sfxCountdown.currentTime = 0;
     document.getElementById("gameplay-dark-overlay").classList.remove("hidden");
-    
     // Reset properties to default conditions
     totalSeedsNonBoost = 0;
     distanceTravelled = 0;
