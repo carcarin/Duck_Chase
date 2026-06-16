@@ -52,7 +52,7 @@ document.addEventListener("click", () => {
         bgmMenu.play();
         menuMusicStarted = true;
     }
-}, { once: false });
+}, { once: true });
 
 const countFiles = [
     "Countdown/Count_3.png",
@@ -859,8 +859,3 @@ creditsClose.addEventListener("click", () => {
 });
 
 
-musicVolume.addEventListener("input", (e) => {
-    const vol = parseFloat(e.target.value);
-    bgmMenu.volume = vol;
-    bgmGameplay.volume = vol;
-});
