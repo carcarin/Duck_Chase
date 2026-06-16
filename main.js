@@ -29,15 +29,18 @@ const skipEndBtn = document.getElementById("skip-end-cutscene");
 // SOUND SYSTEM
 // ============================================================
 const sfxCurtain    = new Audio("sound-2/curtain.mp3");
-const sfxCountdown  = new Audio("sound-2/1 2 3 start.mp3");
-const sfxGameOver   = new Audio("sound-2/Game Over 2.mp3");
+const sfxCountdown  = new Audio("sound-2/123start.mp3");
+const sfxGameOver   = new Audio("sound-2/GameOver.mp3");
 const sfxClick1     = new Audio("sound-2/Click1.mp3");
 sfxClick1.volume = 1.0; // ← add this
 const sfxClick2     = new Audio("sound-2/Click2.mp3");
 sfxClick2.volume = 1.0; 
 const sfxSquawk     = new Audio("sound-2/squawk.wav");   
-const bgmMenu     = new Audio("sound-2/Main menu.mp3");
-const bgmGameplay = new Audio("sound-2/Gameplay BGM.mp3");
+const bgmMenu     = new Audio("sound-2/Mainmenu.mp3");
+const bgmGameplay = new Audio("sound-2/GameplayBGM.mp3");
+const sfxPanelSwish   = new Audio("sound-2/panelsswish.wav");
+const sfxCutscene1    = new Audio("sound-2/cutscene1lastpanel.wav");
+const sfxCutscene2    = new Audio("sound-2/cutscene2lastpanel.wav");
 bgmMenu.loop = true;
 bgmGameplay.loop = true;
 bgmMenu.volume = 0.5;
@@ -136,6 +139,8 @@ startBtn.addEventListener("click", () => {
         topPanel.classList.add("show");
         bottomPanel.classList.add("show");
         skipStartBtn.style.display = "block"; 
+        sfxPanelSwish.play();        // ← swish for panels sliding in
+
     }, 2200);
 
     setTimeout(() => {
@@ -150,6 +155,8 @@ startBtn.addEventListener("click", () => {
     setTimeout(() => {
         cutscene2.style.display = "block"; 
         cutscene2.classList.add("show");
+        
+        sfxCutscene1.play();
     }, 4500);
 
     setTimeout(() => {
@@ -498,6 +505,10 @@ pauseBtn.addEventListener("click", () => {
 resumeBtn.addEventListener("click", () => {
     sfxClick2.play();
     pauseModal.classList.remove("show");
+    bgmGameplay.pause();
+    bgmGameplay.currentTime = 0;
+    sfxCountdown.pause();
+    sfxCountdown.currentTime = 0;
     
     // Show dark overlay for countdown
     document.getElementById("gameplay-dark-overlay").classList.remove("hidden");
@@ -509,6 +520,8 @@ resumeBtn.addEventListener("click", () => {
 retryBtn.addEventListener("click", () => {
     sfxClick1.play();
     pauseModal.classList.remove("show");
+    bgmGameplay.pause();
+    bgmGameplay.currentTime = 0;
     
     // Reset all game state
     totalSeedsNonBoost = 0;
@@ -588,6 +601,7 @@ function triggerGameOverSequence() {
         endCutscene1.classList.add("show");
         endTopPanel.classList.add("animate-in");
         endBottomPanel.classList.add("animate-in");
+        sfxPanelSwish.play(); 
     }, 2200);
 
     setTimeout(() => {
@@ -603,6 +617,8 @@ function triggerGameOverSequence() {
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 endCutscene2.classList.add("show");
+                sfxPanelSwish.play();    // ← swish for final panel
+                sfxCutscene2.play();
             });
         });
     }, 5100);
@@ -637,6 +653,12 @@ endRetryBtn.addEventListener("click", () => {
     gameOverSequenceActive = false;
     statsScreen.classList.remove("show");
     overlay.classList.remove("show");
+    
+    bgmGameplay.pause();
+    bgmGameplay.currentTime = 0;
+    sfxCountdown.pause();
+    sfxCountdown.currentTime = 0;
+    document.getElementById("gameplay-dark-overlay").classList.remove("hidden");
     
     // Reset properties to default conditions
     totalSeedsNonBoost = 0;
@@ -744,8 +766,7 @@ const musicSlider  = document.getElementById("music-volume");
 const sfxSlider    = document.getElementById("sfx-volume");
 
 // Array reference to audio objects to dynamically change volume settings on feedback change
-const sfxAssetsList = [sfxCurtain, sfxCountdown, sfxGameOver, sfxClick1, sfxClick2, sfxSquawk];
-
+const sfxAssetsList = [sfxCurtain, sfxCountdown, sfxGameOver, sfxClick1, sfxClick2, sfxSquawk, sfxPanelSwish, sfxCutscene1, sfxCutscene2];
 // --- OPTIONS MODAL LOGIC ---
 optionBtn.addEventListener("click", () => {
     sfxClick1.play();
